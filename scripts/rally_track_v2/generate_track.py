@@ -212,6 +212,18 @@ def main():
     pts=centerline()
     left=offset_polyline(pts,ROAD_WIDTH/2,True)
     right=offset_polyline(pts,-ROAD_WIDTH/2,True)
+
+    edge_mesh = generate_edge_lines(
+        centerline,
+        ROAD_WIDTH
+    )
+
+    write_stl(
+        output_dir / "edge_lines.stl",
+        edge_mesh,
+        "edge_lines"
+    )
+
     write_stl(out/"road.stl",road_mesh(left,right),"road")
     walls=wall_mesh(left)+wall_mesh(right)
     write_stl(out/"barriers.stl",walls,"barriers")

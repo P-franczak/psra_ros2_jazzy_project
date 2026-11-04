@@ -25,14 +25,16 @@ __pycache__/
 vcs_repos/
 
 # External repos (cloned locally, not tracked)
-roboracer_sim/
+# roboracer_sim/
 turtlebot3_autorace/
 deepracer-custom-tracks/
 
 # models: only vehicle and rrbot.xacro are tracked
 models/*
 !models/vehicle/
+!models/Trapezoid_small/
 !models/rrbot.xacro
+!models/rally_track/
 
 # worlds: only .sdf files are tracked
 simple_example/worlds/*

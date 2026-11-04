@@ -1,14 +1,7 @@
 # Bridge communication between ROS and Gazebo
 
-Pakiet `ros_gz_bridge` przekazuje wiadomości między ROS 2 a Gazebo Transport. Gazebo ma własny system tematów (`gz topic -l`), niewidoczny dla ROS (`ros2 topic list`). Dopiero mostek przenosi wybrane tematy z jednej strony na drugą, z konwersją typów wiadomości.
-
-## Mostek w symulacji samochodu
-
-W pakiecie `roboracer_sim` mostek konfiguruje plik `config/bridge_config.yaml`, wczytywany w `simulation.launch.py`. Uzupełnia się go w zadaniu z instrukcji [roboracer_sim.md](roboracer_sim.md) (krok 4.2), korzystając z tabeli typów poniżej i polecenia `gz topic -i -t <temat>`.
-
-`lazy: true` oznacza, że mostek subskrybuje temat w Gazebo dopiero wtedy, gdy ktoś w ROS subskrybuje jego odpowiednik. Gazebo renderuje kamerę tylko wtedy, gdy ktoś odbiera jej dane, więc bez subskrybenta nie traci mocy obliczeniowej na obraz i chmurę punktów.
-
-## Typy wiadomości
+This package provides a network bridge which enables the exchange of messages
+between ROS and Gazebo Transport.
 
 The following message types can be bridged for topics:
 
@@ -176,9 +169,9 @@ bridge may be specified:
                             # "ROS_TO_GZ" - Bridge ROS topic to Gz
 ```
 
-To run the bridge node with a configuration file (here: the one from the `roboracer_sim` package):
+To run the bridge node with the above configuration:
 ```bash
-ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=$(ros2 pkg prefix roboracer_sim)/share/roboracer_sim/config/bridge_config.yaml
+ros2 run ros_gz_bridge parameter_bridge --ros-args -p config_file:=$WORKSPACE/ros_gz/ros_gz_bridge/test/config/full.yaml
 ```
 
 ## Run the bridge and exchange images
@@ -207,6 +200,7 @@ Then we start the parameter bridge with the previous topic.
 
 ```bash
 # Shell B:
+. ~/bridge_ws/install/setup.bash
 ros2 run ros_gz_bridge parameter_bridge /rgbd_camera/image@sensor_msgs/msg/Image@gz.msgs.Image
 ```
 
@@ -214,6 +208,7 @@ Now we start the ROS GUI:
 
 ```bash
 # Shell C:
+. /opt/ros/rolling/setup.bash
 ros2 run rqt_image_view rqt_image_view /rgbd_camera/image
 ```
 
@@ -223,4 +218,4 @@ Gazebo (published as Gazebo Msgs over Gazebo Transport).
 The screenshot shows all the shell windows and their expected content
 (it was taken using ROS 2 Galactic and Gazebo Fortress):
 
-![Gazebo Transport images and ROS rqt](../images/bridge_image_exchange.png)
+![Gazebo Transport images and ROS rqt](images/bridge_image_exchange.png)

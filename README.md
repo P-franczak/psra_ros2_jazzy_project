@@ -17,7 +17,7 @@ Otwórz VS Code w katalogu z projektem.
 Przejdź do lewego dolnego rogu i kliknij niebieską ikonę z dwiema strzałkami skierowanymi do siebie. Z rozwijanego menu wybierz **"Open Folder in Container... ”** i poczekaj, aż docker się zbuduje. Może to potrwać do 10 minut przy wolniejszym połączeniu internetowym.
 
 > [!TIP]
-> Dla osób korzystających z Windowsa oraz WSL 2 przygotowano `compose.windows.yaml` (ten sam `Dockerfile`, inne ustawienia GPU dla WSL). 
+> Dla osób korzystających z Windowsa oraz WSL 2 przygotowano `Dockerfile.windows` oraz `compose.windows.yaml`. 
 
 Po zalogowaniu się do dockera będzie on działał w sposób podobny do uruchamiania ROS na komputerze hosta. Wszystkie aplikacje GUI będą korzystać z domyślnego menedżera okien hosta, będziesz mieć również dostęp do wszystkich urządzeń na hoście, a także akceleracji GPU.
 Docker ma preinstalowany [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/Tutorials.html) i większość potrzebnych zależności oraz symulator [Gazebo Harmonic](https://gazebosim.org/docs/harmonic/getstarted/).
@@ -71,29 +71,13 @@ Należy pamiętać, aby po zbudowaniu wywołać komendę lub pracować w nowym t
 > ```
 
 ## Przykład
+1. Zbuduj obszar roboczy wraz z simple_example package.  
+2. Uruchom launcha `example.launch.py`, pokazujący, w jaki sposób należy połączyć Gazebo z ROS 2, aby możliwa była wzajemna komunikacja.
 
-Model samochodu 1:10 (F1TENTH) z lidarem RPLIDAR C1 i kamerą RealSense D435 jest w osobnym repozytorium `roboracer_description`, pobieranym do `src/vcs_repos/` z pliku [`roboracer.repos`](roboracer.repos). Symulację samochodu na torze budujesz sam we własnym pakiecie `roboracer_sim` według instrukcji [docs/roboracer_sim.md](docs/roboracer_sim.md). Pakiet `simple_example` pokazuje podstawowe połączenie Gazebo z ROS 2.
 
-```bash
-bash ~/ros2_ws/src/.devcontainer/setup.sh   # model (vcs import) + zależności (rosdep), raz na nowy kontener
-cd ~/ros2_ws && ./build.sh && source install/setup.bash
-
-ros2 launch simple_example example.launch.py         # kamera z Gazebo w RViz (mostek ROS <-> Gazebo)
-ros2 launch roboracer_description display.launch.py   # model samochodu w RViz, bez symulacji
-```
-
-Sterowanie samochodem w symulacji (drugi terminal): `ros2 run teleop_twist_keyboard teleop_twist_keyboard`.
-
-## Dokumentacja
-
-Kolejność odpowiada kolejności nauki.
-
-| | Dokument | Zawartość |
-|---|---|---|
-| 1 | [Getting Started](docs/getting_started.md) | podstawy ROS 2: węzły, tematy, usługi, słowniczek, linki do kursów |
-| 2 | [Ściąga komend](docs/cheatsheet.md) | `colcon`, `ros2 topic/node/param`, TF, `gz`, narzędzia graficzne |
-| 3 | [Pakiety w Pythonie](docs/example.md) | publisher, subscriber i plik launch |
-| 4 | [Zależności przez rosdep](docs/rosdep.md) | `package.xml`, instalacja zależności, najczęstsze błędy |
-| 5 | [Mostek ROS ↔ Gazebo](docs/ros_gz_bridge.md) | `ros_gz_bridge`, typy wiadomości, konfiguracja YAML |
-| 6 | [TF dla kamery i lidaru](docs/tf.md) | ramki czujników, `gz_frame_id`, weryfikacja w RViz |
-| 7 | [Własny pakiet z symulacją](docs/roboracer_sim.md) | pakiet `roboracer_sim` krok po kroku: symulacja, RViz, sterowanie, własna wersja modelu |
+## Dodatkowe materiały
+* [Getting Started](docs/getting_started.md)
+* [ROS 2 Command Cheat Sheet](docs/cheatsheet.md)
+* [ROS 2 Example packages in Python](docs/example.md)
+* [Bridge communication between ROS and Gazebo](docs/ros_gz_bridge.md)
+* [TF dla kamery i lidaru](docs/tf.md)

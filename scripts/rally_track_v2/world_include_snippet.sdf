@@ -1,0 +1,5 @@
+<include>
+  <uri>model://rally_track</uri>
+  <name>rally_track</name>
+  <pose>0 0 0 0 0 0</pose>
+</include>

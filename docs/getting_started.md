@@ -17,11 +17,11 @@ In ROS, topic is a data stream used to exchange information between nodes. Topic
 **Services**  
 Communication through services resembles a client-server model. In this mode, one node (the server) registers a service in the system. Then, any other node can ask that service and get a response. In contrast to topics, services allow for two-way communication, as a request can also contain some data.
 
-![ROS 2 Nodes, Topic and Service](../images/Nodes-TopicandService.gif)
+![ROS 2 Nodes, Topic and Service](images/Nodes-TopicandService.gif)
 
 ## ROS 2 Examples
 
-Repozytorium z oficjalnymi przykładami (turtlesim, talker/listener) dla ROS 2 Jazzy:
+Repozytorium z przykładami dla ROS2 Humble:
 
 ```bash
 git clone https://github.com/ros/ros_tutorials.git -b jazzy
@@ -38,28 +38,38 @@ gz sim sonoma.sdf
 ```
 
 > [!WARNING]
-> Jeśli Gazebo nie startuje albo zachowuje się dziwnie, często w tle działa jeszcze poprzednia instancja. Sprawdź i zakończ ją:
-> ```bash
-> pgrep -fa "gz sim"      # lista działających procesów Gazebo
-> pkill -f "gz sim"       # zakończenie wszystkich
+> W przypadku problemów z uruchomieniem Gazebo:
+> ```bash 
+> ps -ef | grep "gz sim"
+> ```
+> ```bash 
+> pkill -f gz
+> ```
+> ```bash 
+> pkil -f "gz sim"
 > ```
 
-## Słowniczek
+## Glossary
 
-- **DDS** – warstwa komunikacji pod ROS 2. Węzły same odnajdują się w sieci (nie ma centralnego „mastera” jak w ROS 1). Węzły widzą się tylko w obrębie tego samego `ROS_DOMAIN_ID`.
-- **Węzeł (node)** – najmniejsza jednostka obliczeniowa w ROS, zwykle jeden proces realizujący jedno zadanie (sterownik czujnika, algorytm).
-- **Wiadomość (message)** – struktura danych o ustalonym typie, np. `sensor_msgs/msg/LaserScan`. Typy definiują pliki `.msg` w katalogu `msg/`.
-- **Temat (topic)** – nazwany kanał jednokierunkowej, asynchronicznej komunikacji. Wydawca (*publisher*) wysyła na niego wiadomości, subskrybent (*subscriber*) je odbiera. Na jednym temacie może być wielu wydawców i subskrybentów.
-- **Usługa (service)** – komunikacja żądanie–odpowiedź. Serwer usługi przyjmuje żądanie i zwraca odpowiedź klientowi. Typy definiują pliki `.srv` (żądanie i odpowiedź oddzielone linią `---`).
-- **Akcja (action)** – dłuższe zadanie z informacją zwrotną w trakcie i możliwością anulowania (np. „jedź do punktu”). Typy definiują pliki `.action`.
-- **Parametr** – wartość konfiguracyjna węzła, ustawiana przy starcie lub w trakcie działania (`ros2 param`).
-- **Pakiet (package)** – jednostka organizacji kodu: węzły, pliki launch, modele, konfiguracja. Opis i zależności są w `package.xml`.
-- **Plik launch** – skrypt (zwykle Python) uruchamiający naraz wiele węzłów z parametrami.
-- **URDF / xacro** – opis budowy robota: linki (bryły), przeguby, masy, wygląd i kolizje. Xacro to URDF z makrami i zmiennymi.
-- **TF** – drzewo układów współrzędnych robota i ich wzajemnych położeń w czasie. Patrz [tf.md](tf.md).
-- **colcon** – narzędzie do budowania pakietów w workspace (`colcon build`).
-- **rosdep** – narzędzie do instalowania zależności systemowych z `package.xml`. Patrz [rosdep.md](rosdep.md).
-- **`CMakeLists.txt`** – konfiguracja budowania pakietu C++ (CMake).
+- `Underlying communication layer (DDS)` - It provides high-performance, reliable, real-time Underlying communication layer (DDS) data communication and integration capabilities, thereby establishing fundamental support for messaging and service invocation between nodes in ROS2.
+- `Node` - Node is the smallest unit of processing running in ROS. It is typically an executable file. Each Node can use topics or services to communicate with other nodes.
+- `Message` - The variables of data types such as int, float and Message boolean.
+- `Topic` - A one-way asynchronous communication mechanism. By publishing messages to topics or subscribing to topics, the data transmission Topic between nodes can be realized. The topic type is determined by the type of corresponding message.
+- `Publishing` - Send data with a message type corresponding to Publishing the topic content.
+- `Publishers` - For publishing to take place,the publisher node registers various information such as its topics on Publishers the master node, and transmits messages to subscribing nodes that wish to subscribe.
+- `Subscribing` - Receive data with a message type corresponding topic content.
+- `Subscribers` - For subscription to take place,the subscribing node registers various information such as its topics on the master node. Subsequently, it receives all messages from publisher nodes that have published topics of interest to this node, via the master node.
+- `Services` - A bidirectional synchronous communication mechanism where the service is provided to the client request corresponding to a specific task and service servers gives the service response.
+- `Service Servers` - A node taking requests as input, and providing responses as output.
+- `Service Clients` - A node taking responding as input, and providing requests as output.
+- `URDF file` - A model file describing robot’s entire elements, including link, joint, kinematics parameters, dynamics parameters, visual models and collision detection models.
+- `Srv file` - It is stored in the `srv` folder used to define ROS service messages, consisting of two parts: request and respond. The request and respond are separated by the “---” symbol.
+- `Msg file` - It is stored in the `msg` folder used to define ROS topic messages.
+- `package.xml` - Description of the package attributes, including the package name, version number, authorship and other information.
+- `CmakeLists.txt` - Compile the configuration file using Cmake.
+- `launch` - Launch files contain system-wide instructions for launching nodes and services required for the robot to operate.
+
+
 
 ## ROS 2 Package
 
@@ -85,8 +95,6 @@ ros2 pkg create --build-type ament_cmake --node-name my_node my_package
 ```bash
 ros2 pkg create --build-type ament_python --node-name my_node my_package
 ```
-
-Przykładowe węzły w Pythonie są w [example.md](example.md), a pełny przykład pakietu z modelem robota w [roboracer_sim.md](roboracer_sim.md).
 
 ## List of Tutorials
 

@@ -5,3 +5,4 @@ repositories:
     type: git
     url: https://github.com/vision-agh/roboracer_description.git
     version: main
+

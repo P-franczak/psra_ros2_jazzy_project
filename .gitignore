@@ -37,3 +37,7 @@ models/*
 # worlds: only .sdf files are tracked
 simple_example/worlds/*
 !simple_example/worlds/*.sdf
+
+# Docker
+.devcontainer/
+.vscode/

@@ -42,11 +42,11 @@
 
 # 6. Obraz z kamery kolorowej
 - ros_topic_name: "/camera/color/image_raw"
-  gz_topic_name: "/camera/color/image"
+  gz_topic_name: "/camera/color/image_raw"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
-  lazy: true
+  lazy: false
 
 # 7. Parametry kamery kolorowej (ogniskowa, rozdzielczość)
 - ros_topic_name: "/camera/color/camera_info"

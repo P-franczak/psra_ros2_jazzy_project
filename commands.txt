@@ -20,3 +20,5 @@ by dodać zmienną środowiskową do basha:
 echo 'export GZ_SIM_RESOURCE_PATH="${GZ_SIM_RESOURCE_PATH}:$HOME/ros2_ws/src/models"' >> ~/.bashrc
 source ~/.bashrc
 
+by uruchomic pid controller
+ros2 run roboracer_sim wall_pid_controller

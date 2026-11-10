@@ -93,76 +93,6 @@ def generate_start_line(centerline, road_width):
     return white_mesh, black_mesh
 
 
-def generate_curbs(centerline):
-
-    red_mesh = []
-    white_mesh = []
-
-    curb_width = 0.32
-    curb_distance = ROAD_WIDTH / 2 - curb_width / 2 - 0.10
-
-    z = ROAD_TOP_Z + 0.006
-
-    distance = 0.0
-
-    for i in range(1, len(centerline) - 1):
-
-        p0 = centerline[i - 1]
-        p1 = centerline[i]
-        p2 = centerline[i + 1]
-
-        v1 = (
-            p1[0] - p0[0],
-            p1[1] - p0[1]
-        )
-
-        v2 = (
-            p2[0] - p1[0],
-            p2[1] - p1[1]
-        )
-
-        cross = v1[0] * v2[1] - v1[1] * v2[0]
-
-        curvature = abs(cross)
-
-        # Pomijamy odcinki proste.
-        if curvature < 0.0001:
-            distance += math.dist(p1, p2)
-            continue
-
-        length = math.hypot(*v2)
-
-        nx = -v2[1] / length
-        ny = v2[0] / length
-
-        # Wewnętrzna strona zakrętu.
-        direction = 1 if cross > 0 else -1
-
-        cx = p1[0] + direction * nx * curb_distance
-        cy = p1[1] + direction * ny * curb_distance
-
-        # Pozycja następnego punktu.
-        nx2 = -v2[1] / length
-        ny2 = v2[0] / length
-
-        ex = p2[0] + direction * nx2 * curb_distance
-        ey = p2[1] + direction * ny2 * curb_distance
-
-        half = curb_width / 2
-
-        a = (cx - half * nx, cy - half * ny, z)
-        b = (cx + half * nx, cy + half * ny, z)
-        c = (ex + half * nx, ey + half * ny, z)
-        d = (ex - half * nx, ey - half * ny, z)
-
-        target = red_mesh if int(distance / 0.65) % 2 else white_mesh
-
-        quad(target, a, b, c, d)
-
-        distance += math.dist(p1, p2)
-
-    return red_mesh, white_mesh
-
 def generate_barrier_colors(edge):
 
     red_mesh = []
@@ -209,9 +139,9 @@ def generate_barrier_colors(edge):
         C = (c[0], c[1], z1)
         D = (d[0], d[1], z1)
 
-        quad(target, A, B, C, D)
-        quad(target, b, c, C, B)
-        quad(target, a, A, D, d)
+        quad(target, A, D, C, B)
+        quad(target, b, B, C, c)
+        quad(target, a, d, D, A)
 
     return red_mesh, white_mesh
 
@@ -353,18 +283,6 @@ def ribbon_mesh(points,width,z,closed=True):
     return t
 
 
-def start_line_mesh(pts):
-    # Stripe perpendicular to initial direction (+X), spanning road width.
-    x,y=pts[0]
-    # Initial tangent is +X, therefore normal is +Y.
-    half=ROAD_WIDTH/2
-    x0,x1=x-START_LINE_WIDTH/2,x+START_LINE_WIDTH/2
-    y0,y1=y-half,y+half
-    z=LINE_Z
-    a=(x0,y0,z); b=(x0,y1,z); c=(x1,y1,z); d=(x1,y0,z)
-    return [(a,b,c),(a,c,d)]
-
-
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--output",default="models/rally_track/meshes")
@@ -411,9 +329,7 @@ def main():
     walls=wall_mesh(left)+wall_mesh(right)
     write_stl(out/"barriers.stl",walls,"barriers")
     write_stl(out/"centerline.stl",ribbon_mesh(pts,LINE_WIDTH,LINE_Z,True),"centerline")
-    write_stl(out/"start_line.stl",start_line_mesh(pts),"start_line")
     print(f"OK: {len(pts)} centerline samples")
-    print("Generated road.stl, barriers.stl, centerline.stl, start_line.stl")
     print(f"Output: {out.resolve()}")
 
 if __name__=="__main__": main()

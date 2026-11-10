@@ -56,6 +56,166 @@ def generate_edge_lines(centerline, road_width):
     return left_mesh + right_mesh
 
 
+def generate_start_line(centerline, road_width):
+
+    x, y = centerline[0]
+
+    rows = 2
+    cols = 8
+
+    cell_width = 0.22
+    cell_height = road_width / cols
+
+    white_mesh = []
+    black_mesh = []
+
+    z = ROAD_TOP_Z + 0.008
+
+    for row in range(rows):
+        for col in range(cols):
+
+            x0 = x - rows * cell_width / 2 + row * cell_width
+            x1 = x0 + cell_width
+
+            y0 = y - road_width / 2 + col * cell_height
+            y1 = y0 + cell_height
+
+            a = (x0, y0, z)
+            b = (x0, y1, z)
+            c = (x1, y1, z)
+            d = (x1, y0, z)
+
+            if (row + col) % 2 == 0:
+                quad(white_mesh, a, d, c, b)
+            else:
+                quad(black_mesh, a, d, c, b)
+
+    return white_mesh, black_mesh
+
+
+def generate_curbs(centerline):
+
+    red_mesh = []
+    white_mesh = []
+
+    curb_width = 0.32
+    curb_distance = ROAD_WIDTH / 2 - curb_width / 2 - 0.10
+
+    z = ROAD_TOP_Z + 0.006
+
+    distance = 0.0
+
+    for i in range(1, len(centerline) - 1):
+
+        p0 = centerline[i - 1]
+        p1 = centerline[i]
+        p2 = centerline[i + 1]
+
+        v1 = (
+            p1[0] - p0[0],
+            p1[1] - p0[1]
+        )
+
+        v2 = (
+            p2[0] - p1[0],
+            p2[1] - p1[1]
+        )
+
+        cross = v1[0] * v2[1] - v1[1] * v2[0]
+
+        curvature = abs(cross)
+
+        # Pomijamy odcinki proste.
+        if curvature < 0.0001:
+            distance += math.dist(p1, p2)
+            continue
+
+        length = math.hypot(*v2)
+
+        nx = -v2[1] / length
+        ny = v2[0] / length
+
+        # Wewnętrzna strona zakrętu.
+        direction = 1 if cross > 0 else -1
+
+        cx = p1[0] + direction * nx * curb_distance
+        cy = p1[1] + direction * ny * curb_distance
+
+        # Pozycja następnego punktu.
+        nx2 = -v2[1] / length
+        ny2 = v2[0] / length
+
+        ex = p2[0] + direction * nx2 * curb_distance
+        ey = p2[1] + direction * ny2 * curb_distance
+
+        half = curb_width / 2
+
+        a = (cx - half * nx, cy - half * ny, z)
+        b = (cx + half * nx, cy + half * ny, z)
+        c = (ex + half * nx, ey + half * ny, z)
+        d = (ex - half * nx, ey - half * ny, z)
+
+        target = red_mesh if int(distance / 0.65) % 2 else white_mesh
+
+        quad(target, a, b, c, d)
+
+        distance += math.dist(p1, p2)
+
+    return red_mesh, white_mesh
+
+def generate_barrier_colors(edge):
+
+    red_mesh = []
+    white_mesh = []
+
+    inner = offset_polyline(
+        edge,
+        -BARRIER_THICKNESS / 2
+    )
+
+    outer = offset_polyline(
+        edge,
+        BARRIER_THICKNESS / 2
+    )
+
+    distance = 0.0
+
+    for i in range(len(edge)):
+
+        j = (i + 1) % len(edge)
+
+        segment_length = math.dist(edge[i], edge[j])
+
+        middle = distance + segment_length / 2
+
+        distance += segment_length
+
+        target = (
+            red_mesh
+            if int(middle / 1.5) % 2
+            else white_mesh
+        )
+
+        z0 = BARRIER_BASE_Z
+        z1 = z0 + BARRIER_HEIGHT
+
+        a = (inner[i][0], inner[i][1], z0)
+        b = (outer[i][0], outer[i][1], z0)
+        c = (outer[j][0], outer[j][1], z0)
+        d = (inner[j][0], inner[j][1], z0)
+
+        A = (a[0], a[1], z1)
+        B = (b[0], b[1], z1)
+        C = (c[0], c[1], z1)
+        D = (d[0], d[1], z1)
+
+        quad(target, A, B, C, D)
+        quad(target, b, c, C, B)
+        quad(target, a, A, D, d)
+
+    return red_mesh, white_mesh
+
+
 def add_line(points, p, heading, length):
     n = max(2, math.ceil(length * SAMPLES_PER_METER))
     for i in range(1, n + 1):
@@ -214,15 +374,38 @@ def main():
     right=offset_polyline(pts,-ROAD_WIDTH/2,True)
 
     edge_mesh = generate_edge_lines(
-        centerline,
+        pts,
         ROAD_WIDTH
     )
 
     write_stl(
-        output_dir / "edge_lines.stl",
+        out / "edge_lines.stl",
         edge_mesh,
         "edge_lines"
     )
+
+    start_white, start_black = generate_start_line(
+        pts,
+        ROAD_WIDTH
+    )
+
+    red_left, white_left = generate_barrier_colors(left)
+    red_right, white_right = generate_barrier_colors(right)
+
+    write_stl(
+        out / "barriers_red.stl",
+        red_left + red_right,
+        "barriers_red"
+    )
+
+    write_stl(
+        out / "barriers_white.stl",
+        white_left + white_right,
+        "barriers_white"
+    )
+
+    write_stl(out / "start_white.stl", start_white, "start_white")
+    write_stl(out / "start_black.stl", start_black, "start_black")
 
     write_stl(out/"road.stl",road_mesh(left,right),"road")
     walls=wall_mesh(left)+wall_mesh(right)

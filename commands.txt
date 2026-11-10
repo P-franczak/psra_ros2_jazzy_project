@@ -16,3 +16,7 @@ sudo chown -R 1000:1000 ~/Documents/PSRA_nasz_projekt/psra_ros2_jazzy_project
 export GZ_SIM_RESOURCE_PATH="${GZ_SIM_RESOURCE_PATH}:$HOME/ros2_ws/src/models"
 echo $GZ_SIM_RESOURCE_PATH
 
+by dodać zmienną środowiskową do basha:
+echo 'export GZ_SIM_RESOURCE_PATH="${GZ_SIM_RESOURCE_PATH}:$HOME/ros2_ws/src/models"' >> ~/.bashrc
+source ~/.bashrc
+

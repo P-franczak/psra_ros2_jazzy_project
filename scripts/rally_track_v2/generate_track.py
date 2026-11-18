@@ -331,5 +331,8 @@ def main():
     write_stl(out/"centerline.stl",ribbon_mesh(pts,LINE_WIDTH,LINE_Z,True),"centerline")
     print(f"OK: {len(pts)} centerline samples")
     print(f"Output: {out.resolve()}")
+    with open("gt_points.txt", "w") as f:
+        for p in pts:
+            f.write(f"{p[0]:.6f} {p[1]:.6f}\n")
 
 if __name__=="__main__": main()

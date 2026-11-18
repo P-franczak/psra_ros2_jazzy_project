@@ -1,3 +1,63 @@
+Komendy do pobrania nowego autka:
+'''
+cd src/vcs_repos/roboracer_description
+git fetch origin
+git switch model-gym
+git pull origin model-gym
+'''
+
+
+gz sim moving_robot.sdf
+
+colcon build --symlink-install --packages-select roboracer_sim
+source install/setup.bash
+ros2 launch roboracer_sim simulation.launch.py
+ros2 launch robot_camera_tools camera.launch.py
+
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+
+gz topic -i -t /camera (/lidar /imu)
+
+sudo chown -R 1001:1000 ~/Documents/PSRA/psra_ros2_jazzy_project
+sudo chown -R 1000:1000 ~/Documents/PSRA_nasz_projekt/psra_ros2_jazzy_project
+
+
+export GZ_SIM_RESOURCE_PATH="${GZ_SIM_RESOURCE_PATH}:$HOME/ros2_ws/src/models"
+echo $GZ_SIM_RESOURCE_PATH
+
+by dodać zmienną środowiskową do basha:
+echo 'export GZ_SIM_RESOURCE_PATH="${GZ_SIM_RESOURCE_PATH}:$HOME/ros2_ws/src/models"' >> ~/.bashrc
+source ~/.bashrc
+
+by uruchomic pid controller
+ros2 run roboracer_sim wall_pid_controller
+
+by uruchomic pure-pursuit
+ros2 run roboracer_sim line_follower_pure_pursuit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ROS 2 + Gazebo Harmonic docker
 
 Repozytorium zawiera kod do wykorzystania przez studentów w celu realizacji zajęć z Percepcja i Sterowanie Robotów Autonomicznych (PiSRA) w semestrze zimowym 2026/2027.

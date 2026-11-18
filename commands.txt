@@ -1,3 +1,12 @@
+Komendy do pobrania nowego autka:
+'''
+cd src/vcs_repos/roboracer_description
+git fetch origin
+git switch model-gym
+git pull origin model-gym
+'''
+
+
 gz sim moving_robot.sdf
 
 colcon build --symlink-install --packages-select roboracer_sim
@@ -22,3 +31,4 @@ source ~/.bashrc
 
 by uruchomic pid controller
 ros2 run roboracer_sim wall_pid_controller
+

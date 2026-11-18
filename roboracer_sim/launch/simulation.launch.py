@@ -6,7 +6,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, LaunchConfiguration
+from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution, PythonExpression
 
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -19,11 +19,18 @@ def generate_launch_description():
 
     world_file = os.path.join(pkg_dir, 'worlds', 'track.sdf')
     bridge_config = os.path.join(pkg_dir, 'config', 'bridge_config.yaml')
-    xacro_file = os.path.join(pkg_dir, 'urdf', 'roboracer.urdf.xacro')
+    xacro_file = PathJoinSubstitution([description_dir, 'urdf', 
+        PythonExpression([
+            "'roboracer_gym.urdf.xacro' if '",
+            LaunchConfiguration('model'),
+            "' == 'gym' else 'roboracer.urdf.xacro'"
+        ])
+    ])
     rviz_config = os.path.join(description_dir, 'rviz', 'roboracer.rviz')
 
 
     body_arg = DeclareLaunchArgument('body', default_value='shell', choices=['shell', 'open'])
+    model_arg = DeclareLaunchArgument('model', default_value='gym', choices=['classic', 'gym'])
     rviz_arg = DeclareLaunchArgument('rviz', default_value='true')
 
 
@@ -72,6 +79,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         body_arg,
+        model_arg,
         rviz_arg,
         robot_state_publisher,
         gazebo,

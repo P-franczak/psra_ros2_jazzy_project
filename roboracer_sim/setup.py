@@ -31,6 +31,7 @@ setup(
     entry_points={
         'console_scripts': [
             'wall_pid_controller = roboracer_sim.wall_pid_controller:main',
+            'line_follower_pure_pursuit = roboracer_sim.line_follower_pure_pursuit:main',
         ],
     },
 )

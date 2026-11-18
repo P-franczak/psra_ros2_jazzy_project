@@ -57,7 +57,7 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         arguments=['-topic', 'robot_description', '-name', 'roboracer',
-                   '-x', '0.0', '-y', '-2.0', '-z', '10.00'],
+                   '-x', '0.0', '-y', '-2.0', '-z', '0.10'],
         output='screen'
     )
 
@@ -76,6 +76,16 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('rviz')),
         output='screen'
     )
+
+    line_follower = Node(
+    package='roboracer_sim',
+    executable='line_follower_pure_pursuit',
+    parameters=[{'use_sim_time': True,
+                 'camera_height': 0.12,      # from URDF
+                 'camera_pitch_deg': 0.0,   # from URDF
+                 'line_rgb': [250, 215, 20]}],
+    output='screen'
+)
 
     return LaunchDescription([
         body_arg,
